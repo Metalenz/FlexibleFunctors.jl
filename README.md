@@ -5,7 +5,7 @@
 ## Example
 
 ```julia
-using FlexibleFunctors
+using FlexibleFunctors, Zygote
 import FlexibleFunctors: parameters
 
 struct Model
@@ -28,9 +28,11 @@ m1 = Model([s1, s2, s3], (:elements,))
 m2 = Model([s1, s2, s3], ())
 
 p1, re1 = destructure(m1)
+p2, re2 = destructure(m2)
+
 julia> println(p1)
 # [1.0, 3.0]
-p2, re2 = destructure(m2)
+
 julia> println(p2)
 # Any[]
 
@@ -41,6 +43,12 @@ julia> mapreduce((s)->area(s), +, re1([3.0, 4.0]).elements)
 # Uses original widths since `m2` has no parameters
 julia> mapreduce((s)->area(s), +, re2([3.0, 4.0]).elements)
 # 14
+
+# Map vector of parameters to an object for optimization
+grad = Zygote.gradient((x) -> mapreduce(area, +, x.elements), re1([3.0, 4.0]));
+
+julia> getfield.(grad[1].elements, :w)
+# [6.0, 4.0, 8.0]
 ```
 
 ## Overview 
