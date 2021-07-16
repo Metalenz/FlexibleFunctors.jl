@@ -1,3 +1,10 @@
+#=
+    This code is adapted from Flux.jl/src/functors.jl, credit to Mike Innes, et al.
+
+    A reference to the original code can be found here:
+    https://github.com/FluxML/Flux.jl/blob/v0.10.0/src/functor.jl
+=#
+
 """
     isleaf(x)
 Return true if `x` has no children according to [`parameters`](@ref).
