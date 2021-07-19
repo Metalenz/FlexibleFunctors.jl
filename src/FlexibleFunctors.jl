@@ -2,7 +2,7 @@ module FlexibleFunctors
 
 import ConstructionBase: constructorof
 
-export destructure, ffunctor
+export destructure, ffunctor, fieldmap
 
 include("param_functors.jl")
 

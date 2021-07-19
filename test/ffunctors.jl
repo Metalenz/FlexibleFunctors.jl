@@ -49,6 +49,17 @@ end
     @test re(["hello", -1]) == Foo(Foo(1, "hello", (:y,)), -1, (:x, :y))
 end
 
+@testset "fieldmap" begin
+    mf1 = Foo(3.0, 2, (:x,))
+    @test fieldmap((x) -> x^2, mf1) == Foo(9.0, 2, (:x,))
+
+    mf2 = Foo(-22.0, 3.14, (:x, :y))
+    @test fieldmap(abs, mf2) == Foo(22.0, 3.14, (:x, :y))
+
+    mf3 = Foo(Foo(1, 2, (:y,)), 3, (:x, :y))
+    @test fieldmap(sqrt, mf3) == Foo(Foo(1, sqrt(2), (:y,)), sqrt(3), (:x, :y))
+end
+
 module MyMod
     import FlexibleFunctors
     struct Bar{A,B,PS<:Tuple}

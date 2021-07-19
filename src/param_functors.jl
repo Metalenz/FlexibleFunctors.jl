@@ -25,7 +25,7 @@ parameters(x::AbstractArray) = x
 parameters(x::AbstractArray{<:Number}) = ()
 
 """
-    _parammap(f, x)
+    parammap(f, x)
 
 Maps `f` to each parameter (as specified by [`parameters`](@ref)) to the model `x`. Evaluates
     calls to [`ffunctor`](@ref).
@@ -36,7 +36,7 @@ function parammap(f, x)
 end
 
 """
-    _ffunctor(x::T)
+    ffunctor(x::T)
 
 Returns a flexible functor based on the chosen [`parameters`](@ref).
 """
@@ -56,7 +56,7 @@ ffunctor(x::AbstractArray) = x, y -> y
 ffunctor(x::AbstractArray{<:Number}) = (), _ -> x
 
 """
-    _destructure(s)
+    destructure(s)
 
 For a struct `s` which has parameters given by [`parameters`](@ref), iterates through all
     non-leaf nodes and collects the marked fields into a flat vector. This is particularly
@@ -68,7 +68,7 @@ NOTE: The flat vector representation is a `Vector{T}`. Julia will promote all en
 """
 function destructure(s)
     xs = []
-    _fieldmap(s) do x
+    fieldmap(s) do x
         x isa AbstractArray && push!(xs, x)
         x isa Number && push!(xs, [x])
         return x
@@ -77,14 +77,14 @@ function destructure(s)
 end
 
 """
-    _restructure(s, xs)
+    restructure(s, xs)
 
 Given a struct `s` with parameters given by [`parameters`](@ref), restructures `s` according
     to the vector `xs`. In particular, `s == restructure(s, destructure(s)[1])`.
 """
 function restructure(s, xs)
     i = 0
-    _fieldmap(s) do x
+    fieldmap(s) do x
         if x isa AbstractArray
             x = reshape(xs[i.+(1:length(x))], size(x))
             i += length(x)
@@ -102,7 +102,7 @@ end
 Maps the function `f` over the fields of a `FlexibleFunctor` (equivalently, the parameter
     fields of a struct `s` given by [`parameters`](@ref)).
 """
-function _fieldmap(f, x; exclude = isleaf)
-    y = exclude(x) ? f(x) : parammap(x -> _fieldmap(f, x; exclude = exclude), x)
+function fieldmap(f, x; exclude = isleaf)
+    y = exclude(x) ? f(x) : parammap(x -> fieldmap(f, x; exclude = exclude), x)
     return y
 end
